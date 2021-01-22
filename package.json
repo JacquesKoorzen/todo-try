@@ -11,5 +11,9 @@
     "next": "10.0.5",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "localstorage-polyfill": "^1.0.1",
+    "window": "^4.2.7"
   }
 }

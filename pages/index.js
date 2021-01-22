@@ -1,65 +1,102 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import {useState} from 'react'
+import { nanoid } from 'nanoid'
 
-export default function Home() {
+const isBrowser = () => typeof window !== "undefined"
+
+isBrowser()
+
+const myStorage = isBrowser.localStorage;
+
+const nanoId = nanoid();
+
+function Index() {
+
+  const [userInput, setUserInput] = useState('');
+  const [todolist, setTodoList] = useState([]);
+
+  const handleChange = (e) => {
+    e.preventDefault();
+
+    setUserInput(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setTodoList([
+      userInput,
+      ...todolist
+    ]);
+
+    
+
+    const title = userInput;
+
+    const isCompleted = false;
+
+    const inputObj = { 'title': title, 'id': nanoId, 'completed': isCompleted };
+
+    const stringifiedObj = JSON.stringify(inputObj)
+    localStorage.setItem(inputObj.id, stringifiedObj)
+    console.log(localStorage)
+
+    setUserInput('');
+
+  };
+
+  const handleDelete = (todo,idKey) => {
+    console.log(idKey)
+    console.log(todolist)
+    const updatedArr = todolist.filter(todoItem => todolist.indexOf(todoItem) !== todolist.indexOf(todo));
+
+    setTodoList(updatedArr)
+
+    // Om die data wat in localStorage is ?
+
+    localStorage.removeItem(JSON.stringify(idKey))
+    console.log(localStorage)
+  };
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div class="container-1">
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <div class="box-1">
+      <h3>TODO List</h3>
+      </div>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+      <div class="box-2">
+      <form>
+      <input type="text" value={userInput} placeholder='Enter a TODO' onChange={handleChange} /><button onClick={handleSubmit}>Submit</button>
+      
+      </form>
+      </div>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+      <div class="box-3">
+      <ul>
+         {todolist.length >= 1 ? todolist.map((todo, nanoId) => {
+          return <li key={nanoId}><input type="checkbox" />{todo}<button onClick={(e) => {
+            e.preventDefault();
+            const idKey =  nanoId
+            handleDelete(todo,idKey);
+          } }>Delete</button></li>;
+          
+        })
+             : 'Enter a TODO item'}
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      </ul>
+      </div>
     </div>
-  )
+  );
 }
+export default Index
+
+
+
+
+
+// const obj = {'title': "TITLE", 'id': "asjcbsjdbc", 'completed':false};
+// const stringifiedObj = JSON.stringify(obj);
+// localStorage.setItem(obj.id, stringifiedObj);
+
+// const storageString = localStorage.getItem(obj.id);
+// const storageObj = JSON.parse(storageString);
